@@ -135,16 +135,18 @@ const Ticker: React.FC<Props> = ({ duration = 250, textStyle, textProps, childre
   const [measured, setMeasured] = useState<boolean>(false);
 
   const measureMap = useRef<MeasureMap>({});
-  const measureStrings: string[] = Children.map(children, child => {
-    if (typeof child === "string" || typeof child === "number") {
-      return splitText(`${child}`);
-    } else {
-      //@ts-ignore
-      return child.props && child.props.rotateItems;
-    }
-  }).reduce((acc, val) => acc.concat(val), []);
+  let measureStrings = Children.map(children, child => {
+      if (typeof child === "string" || typeof child === "number") {
+          return splitText(`${child}`);
+      }
+      else {
+          //@ts-ignore
+          return child.props && child.props.rotateItems;
+      }
+  });
+  measureStrings = measureStrings?.flat() || [];
 
-  const hasNumbers = measureStrings.find(v => isNumber(v)) !== undefined;
+  const hasNumbers = measureStrings?.find(v => isNumber(v)) !== undefined;
   const rotateItems = uniq([...(hasNumbers ? numberItems : []), ...measureStrings]);
 
   const handleMeasure = (e: any, v: string) => {
